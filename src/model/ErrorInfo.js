@@ -11,5 +11,9 @@
     novelSourceError: {
         errno: 10002,
         message: '小说源设置错误'
+    },
+    downloadFileSizeFailInfo: {
+        errno: 10003,
+        message: '图片下载错误'
     }
 }

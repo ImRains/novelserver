@@ -8,6 +8,8 @@ const logger = require('koa-logger')
 const index = require('./routes/index')
 const novelApiRouter = require('./routes/api/novel')
 const cors = require('koa2-cors');
+const koaStatic = require('koa-static')
+const path = require('path')
 
 // error handler
 onerror(app)
@@ -32,7 +34,8 @@ app.use(bodyparser({
 }))
 app.use(json())
 app.use(logger())
-app.use(require('koa-static')(__dirname + '/public'))
+app.use(koaStatic(__dirname + '/public'))
+app.use(koaStatic(path.join(__dirname , '..' , 'noverFiles')))
 
 app.use(views(__dirname + '/views', {
   extension: 'ejs'

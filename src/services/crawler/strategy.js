@@ -1,4 +1,4 @@
-const Crawler = require('Crawler')
+const Crawler = require('crawler')
 
 class Strategy {
     constructor(options){

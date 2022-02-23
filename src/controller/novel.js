@@ -9,6 +9,7 @@ const parser = require('../services/crawler/index')
 const { getNovelInfoServer,createNovelServer,updateNovelInfoServer } = require('../services/db/novel')
 const { getNovelChapterServer, addNovelChapterServer,getChapterContentServer,updateChapter } = require('../services/db/novel-chapter')
 const { isToday, getTimeStamp } = require('../utils/time')
+const { downloadFile } = require('./utils')
 
 /**
  * 搜索书籍，获取书籍列表
@@ -38,6 +39,8 @@ async function getNovelInfo({title,sourceUrl,source}){
     if(!novelInfo){
         let sourceNovelInfo = await parser().source(sourceUrl , _strategy.getNovelInfo, _strategy)
         let { cover,author,title,desc } = sourceNovelInfo
+        // 下载图片
+        cover = await downloadFile(cover)
         let _r = await createNovelServer({
             cover,
             author,
@@ -94,6 +97,7 @@ async function getNovelInfo({title,sourceUrl,source}){
             //当天更新的目录,无需操作
         }
     }
+
     result.chapters = chapterList
     return new SuccessModel(result)
 }
