@@ -39,9 +39,7 @@ async function getNovelInfo({title,sourceUrl,source}){
     if(!novelInfo){
         let sourceNovelInfo = await parser().source(sourceUrl , _strategy.getNovelInfo, _strategy)
         let { cover,author,title,desc } = sourceNovelInfo
-        // 下载图片
-        cover = await downloadFile(cover)
-        let _r = await createNovelServer({
+        let r = await createNovelServer({
             cover,
             author,
             title,
@@ -49,55 +47,84 @@ async function getNovelInfo({title,sourceUrl,source}){
             source,
             sourceUrl
         })
-        novelInfo = _r
+        novelInfo = r
+        // 5s后,下载图片并替换
+        setTimeout(function(){
+            downloadFile(cover).then((res) =>{
+                console.log('执行更新书籍cover',novelInfo.id)
+                updateNovelInfoServer({
+                    newCover:res
+                },{id:novelInfo.id})
+            })
+        },10000)
     }
     result.info = novelInfo
     // 获取书籍信息后开始查询目录列表
-    let chapterList = await getNovelChapterServer(novelInfo.id)
-    // 首次加载目录
-    if(chapterList.count == 0){
-        // 如果目录列表为空，说明未爬取章节信息
-        let sourceNovelChapter = await parser().source(sourceUrl , _strategy.getChapter, _strategy)
-        let _list = sourceNovelChapter.chapters
-        // 目录存入数据库
-        await Promise.all(_list.map(async (item,index) => {
-            await addNovelChapterServer({
-                chaptername:item.name,
-                chapterindex:index,
-                source:source,
-                sourceUrl:item.url,
-                novelId:novelInfo.id
-            })
-        }))
-        let newDate = getTimeStamp()
-        await updateNovelInfoServer({newDate},{id:novelInfo.id})
+    let chapterList = {}
+    if(!!novelInfo.id){
         chapterList = await getNovelChapterServer(novelInfo.id)
-    }else{
-        // 非首次加载，存在数据，需要判断目录信息是否为当日最新数据
-        if(!isToday(novelInfo.date)){
-            //不是当天更新的目录,需要爬取目录并进行对比
-            // 爬取当天最新目录
+        // 首次加载目录
+        if(chapterList.count == 0){
+            // 如果目录列表为空，说明未爬取章节信息
             let sourceNovelChapter = await parser().source(sourceUrl , _strategy.getChapter, _strategy)
             let _list = sourceNovelChapter.chapters
-            let _l = chapterList.rows.length - 1
-            // 新的目录存入数据库
-            await Promise.all(_list.map(async (item,index) => {
-                if(index > _l){
+            chapterList.count = _list.length
+            chapterList.rows = _list
+            // 目录存入数据库
+            // 存入数据，如果novelInfo没有id，说明书籍信息还没存入数据库，等下次再存入目录
+            setTimeout(function(){
+                Promise.all(_list.map(async (item,index) => {
                     await addNovelChapterServer({
-                        chaptername:item.name,
+                        chaptername:item.chaptername,
                         chapterindex:index,
-                        source:source,
-                        sourceUrl:item.url,
+                        source:item.source,
+                        sourceUrl:item.sourceUrl,
                         novelId:novelInfo.id
                     })
-                }
-            }))
-            chapterList = await getNovelChapterServer(novelInfo.id)
+                })).then(()=>{
+                    let newDate = getTimeStamp()
+                    updateNovelInfoServer({newDate},{id:novelInfo.id})
+                })
+            },0)
         }else{
-            //当天更新的目录,无需操作
+            // 非首次加载，存在数据，需要判断目录信息是否为当日最新数据
+            if(!isToday(novelInfo.date)){
+                //不是当天更新的目录,需要爬取目录并进行对比
+                // 爬取当天最新目录
+                let sourceNovelChapter = await parser().source(sourceUrl , _strategy.getChapter, _strategy)
+                let _list = sourceNovelChapter.chapters
+                chapterList.count = _list.length
+                chapterList.rows = _list
+                let _l = chapterList.rows.length - 1
+                // 新的目录存入数据库
+                setTimeout(function(){
+                    Promise.all(_list.map(async (item,index) => {
+                        if(index > _l){
+                            await addNovelChapterServer({
+                                chaptername:item.name,
+                                chapterindex:index,
+                                source:source,
+                                sourceUrl:item.url,
+                                novelId:novelInfo.id
+                            })
+                        }
+                    })).then(()=>{
+                        // 更新时间
+                        let newDate = getTimeStamp()
+                        updateNovelInfoServer({newDate},{id:novelInfo.id})
+                    })
+                },0)
+            }else{
+                //当天更新的目录,无需操作
+            }
         }
+    }else{
+        // 还没存入数据，直接爬
+        let sourceNovelChapter = await parser().source(sourceUrl , _strategy.getChapter, _strategy)
+        let _list = sourceNovelChapter.chapters
+        chapterList.count = _list.length
+        chapterList.rows = _list
     }
-
     result.chapters = chapterList
     return new SuccessModel(result)
 }

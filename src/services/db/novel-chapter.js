@@ -13,7 +13,7 @@ async function getNovelChapterServer(id){
         novelId:id
     }
     const result = await NovelChapter.findAndCountAll({
-        attributes:['novelId','chaptername','source','sourceUrl'],
+        attributes:['novelId','chaptername','source','chapterindex','sourceUrl'],
         order: [
             ['chapterindex', 'asc']
         ],

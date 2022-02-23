@@ -97,9 +97,10 @@ class XibiquStrategy extends Strategy {
     // 解析目录页书籍基本信息
     parseNovelInfo ($) {
         let cover = $("#fmimg").children()[0].attribs['src']
-        let desc =  $("#intro").children()[1].children[0].data
+        let desc =  $("#intro").children()[1].children[0] ? $("#intro").children()[1].children[0].data : '暂无简介'
         let author =  $("#info").children()[1].children[0].data
         let title =  $("#info").children()[0].children[0].data
+        
         return {
             cover,
             author,
@@ -112,15 +113,13 @@ class XibiquStrategy extends Strategy {
     parseChapter ($) {
         let res = []
         let children = $("#list").children()
-        // console.log(children[0])
-        children[0].children.forEach(child => {
-    
+        children[0].children.forEach((child,index) => {
             if (child.children && child.children[0]) {
                 let item = child.children[0]
-                //console.log(item)
                 let resObj = {
-                    url: this.BASE.replace(/\/$/, '') + item.attribs['href'],
-                    name: item.children[0].data
+                    sourceUrl: this.BASE.replace(/\/$/, '') + item.attribs['href'],
+                    chaptername:item.children[0].data,
+                    source:'xbiqu'
                 }
                 res.push(resObj)
             }

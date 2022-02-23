@@ -13,7 +13,7 @@ async function getNovelInfoServer(title){
         title
     }
     const result = await Novel.findOne({
-        attributes:['id','title','cover','date','author','source','sourceUrl'],
+        attributes:['id','title','cover','date','desc','author','source','sourceUrl'],
         where:whereOpt
     })
     return result
