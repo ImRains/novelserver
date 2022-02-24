@@ -26,6 +26,10 @@ const Novel = seq.define('novel',{
         type:STRING,
         comment:'作者'
     },
+    hot:{
+        type:INTEGER,
+        comment:'热度'
+    },
     source:{
         type:STRING,
         comment:'数据源'

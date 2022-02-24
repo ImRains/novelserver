@@ -6,7 +6,7 @@ const { SuccessModel, ErrorModel } = require('../model/ResModel')
 const { getNovelInfoError,novelSourceError } = require('../model/ErrorInfo')
 const { sources } = require('../config/source')
 const parser = require('../services/crawler/index')
-const { getNovelInfoServer,getNovelInfoServerById,createNovelServer,updateNovelInfoServer } = require('../services/db/novel')
+const { getNovelInfoServer,getNovelInfoServerById,createNovelServer,updateNovelInfoServer,getHotNovelServer } = require('../services/db/novel')
 const { getNovelChapterServer, addNovelChapterServer,getChapterContentServer,updateChapter } = require('../services/db/novel-chapter')
 const { isToday, getTimeStamp } = require('../utils/time')
 const { downloadFile } = require('./utils')
@@ -57,6 +57,9 @@ async function getNovelInfo({title,sourceUrl,source}){
                 },{id:novelInfo.id})
             })
         },10000)
+    }else{
+        // 查询到了，热度 + 1
+        updateNovelInfoServer({newHot:novelInfo.hot + 1},{id:novelInfo.id})
     }
     result.info = novelInfo
     // 获取书籍信息后开始查询目录列表
@@ -166,6 +169,9 @@ async function getNovelInfoById(bookid) {
     // 如果没有查询到，说明数据库无本书籍信息，返回错误
     if(!novelInfo){
         return new ErrorModel(getNovelInfoError)
+    }else{
+        // 查询到了，热度 + 1
+        updateNovelInfoServer({newHot:novelInfo.hot + 1},{id:novelInfo.id})
     }
     result.info = novelInfo
     // 获取书籍信息后开始查询目录列表
@@ -240,9 +246,18 @@ async function getNovelInfoById(bookid) {
     return new SuccessModel(result)
 }
 
+/**
+ * 获取热度排名
+ */
+async function getHotNovel(limit){
+    let result = await getHotNovelServer(limit)
+    return new SuccessModel(result)
+}
+
 module.exports = {
     search,
     getNovelInfo,
     getChapterContent,
-    getNovelInfoById
+    getNovelInfoById,
+    getHotNovel
 }

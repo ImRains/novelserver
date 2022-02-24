@@ -13,7 +13,7 @@ async function getNovelInfoServer(title){
         title
     }
     const result = await Novel.findOne({
-        attributes:['id','title','cover','date','desc','author','source','sourceUrl'],
+        attributes:['id','title','cover','date','desc','author','hot','source','sourceUrl'],
         where:whereOpt
     })
     return result
@@ -29,7 +29,7 @@ async function getNovelInfoServerById(id){
         id
     }
     const result = await Novel.findOne({
-        attributes:['id','title','cover','date','desc','author','source','sourceUrl'],
+        attributes:['id','title','cover','date','desc','author','hot','source','sourceUrl'],
         where:whereOpt
     })
     return result
@@ -40,13 +40,14 @@ async function getNovelInfoServerById(id){
  * @param {*} param0 
  * @returns 
  */
-async function createNovelServer({title='无',cover='无',date='无',author='无',source='无',sourceUrl='无',desc='无'}){
+async function createNovelServer({title='无',cover='无',date='无',author='无',source='无',hot=0,sourceUrl='无',desc='无'}){
     date = getTimeStamp()
     const result = await Novel.create({
         title,
         desc,
         cover,
         date,
+        hot,
         author,
         source,
         sourceUrl
@@ -60,7 +61,7 @@ async function createNovelServer({title='无',cover='无',date='无',author='无
  * @param {*} param0 
  * @param {*} param1 
  */
-async function updateNovelInfoServer({newDate,newTitle,newDesc,newCover,newAuthor,newSource,newSourceUrl},{id}){
+async function updateNovelInfoServer({newDate,newTitle,newDesc,newCover,newAuthor,newHot,newSource,newSourceUrl},{id}){
     const upData = {}
     if(newDate){
         upData.date = newDate
@@ -73,6 +74,9 @@ async function updateNovelInfoServer({newDate,newTitle,newDesc,newCover,newAutho
     }
     if(newCover){
         upData.cover = newCover
+    }
+    if(newHot){
+        upData.hot = newHot
     }
     if(newAuthor){
         upData.author = newAuthor
@@ -93,9 +97,24 @@ async function updateNovelInfoServer({newDate,newTitle,newDesc,newCover,newAutho
     return result[0] > 0 // 返回修改的行数，大于0则修改成功
 }
 
+/**
+ * 获取热度小说排行
+ */
+async function getHotNovelServer(limit){
+    const result = await Novel.findAll({
+        attributes:['id','title','cover','date','desc','author','hot','source','sourceUrl'],
+        limit,
+        order: [
+            ['hot', 'desc']
+        ]
+    })
+    return result
+}
+
 module.exports = {
     getNovelInfoServer,
     getNovelInfoServerById,
     createNovelServer,
-    updateNovelInfoServer
+    updateNovelInfoServer,
+    getHotNovelServer
 }

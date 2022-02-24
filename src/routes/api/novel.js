@@ -3,7 +3,7 @@
  */
 
 const router = require('koa-router')()
-const { search,getNovelInfo,getChapterContent,getNovelInfoById } = require('../../controller/novel')
+const { search,getNovelInfo,getChapterContent,getNovelInfoById,getHotNovel } = require('../../controller/novel')
 
 router.prefix('/api/novels')
 
@@ -30,6 +30,12 @@ router.get('/getNovelInfoById', async (ctx, next) => {
 router.get('/chaptercontent', async (ctx, next) => {
     let { novelId, chapterindex } = ctx.query
     ctx.body = await getChapterContent({novelId,chapterindex})
+})
+
+// 获取热度排行
+router.get('/getHotNovel', async (ctx, next) => {
+    let { limit } = ctx.query
+    ctx.body = await getHotNovel(Number(limit))
 })
 
 // 下载小说
