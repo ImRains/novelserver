@@ -151,7 +151,7 @@ async function getChapterContent({novelId,chapterindex}){
         let sourceChapter = await parser().chapterContent(chapter.sourceUrl, _strategy)
         // 更新数据库
         let newChaptercontent = sourceChapter.content
-        await updateChapter({newChaptercontent},{chapterindex})
+        await updateChapter({newChaptercontent},{novelId,chapterindex})
         chapter = await getChapterContentServer({novelId,chapterindex})
     }
     return new SuccessModel(chapter)

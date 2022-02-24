@@ -1,5 +1,6 @@
 const Strategy = require('../strategy')
 const { search } = require('../utils')
+const { getUserAgent } = require('../../../config/useragent')
 
 class XibiquStrategy extends Strategy {
     constructor(options){
@@ -17,7 +18,12 @@ class XibiquStrategy extends Strategy {
                 callback(chapter)
             }
         })
-        c.queue([sourceUrl]);
+        c.queue({
+            url:sourceUrl,
+            headers:{
+                'User-Agent':getUserAgent()
+            }
+        });
     }
 
     // 得到书籍基本信息
@@ -31,7 +37,12 @@ class XibiquStrategy extends Strategy {
                 callback(chapter)
             }
         })
-        c.queue([sourceUrl]);
+        c.queue({
+            url:sourceUrl,
+            headers:{
+                'User-Agent':getUserAgent()
+            }
+        });
     }
 
     // 获得全部章节小说详细内容
@@ -41,7 +52,6 @@ class XibiquStrategy extends Strategy {
         let queueIndex = 0
         let c = this.getCrawler((error, res) => {
             if (error) {
-                console.log(error);
                 callback(null)
             } else {
                 const $ = res.$;
@@ -49,21 +59,30 @@ class XibiquStrategy extends Strategy {
                 allContent = allContent + detailRes.content
                 queueIndex = queueIndex + 1
                 if (queueIndex < chapters.length) {
-                    c.queue(chapters[queueIndex].url);
+                    c.queue({
+                        url:chapters[queueIndex].url,
+                        headers:{
+                            'User-Agent':getUserAgent()
+                        }
+                    });
                 } else {
                     callback(allContent)
                 }
     
             }
         })
-        c.queue(chapters[queueIndex].url);
+        c.queue({
+            url:chapters[queueIndex].url,
+            headers:{
+                'User-Agent':getUserAgent()
+            }
+        });
     }
 
     // 获得章节小说详细内容
     getSingleChapterDetail (chapterUrl, callback) {
         let c = this.getCrawler((error, res) => {
             if (error) {
-                console.log(error);
                 callback(null)
             } else {
                 const $ = res.$;
@@ -71,7 +90,12 @@ class XibiquStrategy extends Strategy {
                 callback(detailRes)
             }
         })
-        c.queue(chapterUrl);
+        c.queue({
+            url:chapterUrl,
+            headers:{
+                'User-Agent':getUserAgent()
+            }
+        });
     }
 
     //解析详细内容

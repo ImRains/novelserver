@@ -60,7 +60,7 @@ async function getChapterContentServer({novelId,chapterindex}){
  * @param {*} param0 
  * @param {*} param1 
  */
-async function updateChapter({newChaptername,newChaptercontent,newSource,newSourceUrl},{chapterindex}){
+async function updateChapter({newChaptername,newChaptercontent,newSource,newSourceUrl},{novelId,chapterindex}){
     const upData = {}
     if(newChaptername){
         upData.chaptername = newChaptername
@@ -75,7 +75,8 @@ async function updateChapter({newChaptername,newChaptercontent,newSource,newSour
         upData.sourceUrl = newSourceUrl
     }
     const whereData = {
-        chapterindex
+        chapterindex,
+        novelId
     }
     // 执行修改
     const result = await NovelChapter.update(upData,{
