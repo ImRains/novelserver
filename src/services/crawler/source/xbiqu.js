@@ -76,17 +76,14 @@ class XibiquStrategy extends Strategy {
 
     //解析详细内容
     parseChapterDetail = function ($) {
-
         let title = $('.bookname').children()[0].children[0].data
-        //console.log(title)
         let content = $('#content')
         let contentStr = '    '
         content[0].children && content[0].children.forEach((child, index) => {
-            if (index > 1 && child.data) {
+            if (index && child.data) {
                 contentStr = contentStr + child.data + '\r\n'
             }
         })
-        contentStr = '    ' + title + '\r\n\r\n\r\n' + contentStr + +title
         contentStr = contentStr.replace(/NaN/g, '')
         return {
             title,
