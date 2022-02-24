@@ -89,33 +89,39 @@ async function getNovelInfo({title,sourceUrl,source}){
         }else{
             // 非首次加载，存在数据，需要判断目录信息是否为当日最新数据
             if(!isToday(novelInfo.date)){
+                console.log('当天首次加载，检测是否有目录更新')
                 //不是当天更新的目录,需要爬取目录并进行对比
                 // 爬取当天最新目录
                 let sourceNovelChapter = await parser().source(sourceUrl , _strategy.getChapter, _strategy)
                 let _list = sourceNovelChapter.chapters
+                let _l = chapterList.rows.length
                 chapterList.count = _list.length
                 chapterList.rows = _list
-                let _l = chapterList.rows.length - 1
-                // 新的目录存入数据库
-                setTimeout(function(){
-                    Promise.all(_list.map(async (item,index) => {
-                        if(index > _l){
+                let newlist = JSON.parse(JSON.stringify(_list)).slice(_l)
+                if(newlist.length>0){
+                    //存在新目录
+                    // 新的目录存入数据库
+                    console.log('存在新目录，更新数据库')
+                    setTimeout(function(){
+                        Promise.all(newlist.map(async (item,index) => {
                             await addNovelChapterServer({
-                                chaptername:item.name,
-                                chapterindex:index,
-                                source:source,
-                                sourceUrl:item.url,
+                                chaptername:item.chaptername,
+                                chapterindex:item.chapterindex,
+                                source:item.source,
+                                sourceUrl:item.sourceUrl,
                                 novelId:novelInfo.id
                             })
-                        }
-                    })).then(()=>{
-                        // 更新时间
-                        let newDate = getTimeStamp()
-                        updateNovelInfoServer({newDate},{id:novelInfo.id})
-                    })
-                },0)
+                        })).then(()=>{
+                            // 更新时间
+                            let newDate = getTimeStamp()
+                            updateNovelInfoServer({newDate},{id:novelInfo.id})
+                            console.log('更新完成')
+                        })
+                    },0)
+                }
             }else{
                 //当天更新的目录,无需操作
+                console.log('当天已更新最新目录，直接数据库调用目录信息')
             }
         }
     }else{

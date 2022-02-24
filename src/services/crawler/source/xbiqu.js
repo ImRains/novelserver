@@ -126,6 +126,10 @@ class XibiquStrategy extends Strategy {
         })
         let author =  $("#info").children()[1].children[0].data
         let title =  $("#info").children()[0].children[0].data
+        res.map((item,index)=>{
+            item.chapterindex = index
+            return item
+        })
         return {
             author,
             title,

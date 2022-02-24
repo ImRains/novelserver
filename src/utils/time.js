@@ -7,6 +7,7 @@
  * @param {*} timepstamp 
  */
 function isToday(timepstamp){
+    console.log('isTody?',new Date(timepstamp * 1000).toDateString() === new Date().toDateString())
     return new Date(timepstamp * 1000).toDateString() === new Date().toDateString()
 }
 
