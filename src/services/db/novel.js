@@ -20,6 +20,22 @@ async function getNovelInfoServer(title){
 }
 
 /**
+ * 通过书籍 id获取
+ * @param {*} title 
+ * @returns 
+ */
+async function getNovelInfoServerById(id){
+    const whereOpt = {
+        id
+    }
+    const result = await Novel.findOne({
+        attributes:['id','title','cover','date','desc','author','source','sourceUrl'],
+        where:whereOpt
+    })
+    return result
+}
+
+/**
  * 添加数据信息
  * @param {*} param0 
  * @returns 
@@ -79,6 +95,7 @@ async function updateNovelInfoServer({newDate,newTitle,newDesc,newCover,newAutho
 
 module.exports = {
     getNovelInfoServer,
+    getNovelInfoServerById,
     createNovelServer,
     updateNovelInfoServer
 }

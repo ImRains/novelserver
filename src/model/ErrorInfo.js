@@ -15,5 +15,9 @@
     downloadFileSizeFailInfo: {
         errno: 10003,
         message: '图片下载错误'
+    },
+    getNovelInfoError:{
+        errno: 10004,
+        message: '暂无该书籍'
     }
 }

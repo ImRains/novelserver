@@ -3,7 +3,7 @@
  */
 
 const router = require('koa-router')()
-const { search,getNovelInfo,getChapterContent } = require('../../controller/novel')
+const { search,getNovelInfo,getChapterContent,getNovelInfoById } = require('../../controller/novel')
 
 router.prefix('/api/novels')
 
@@ -14,10 +14,16 @@ router.get('/search', async (ctx, next) => {
     ctx.body = await search({title,source})
 })
 
-// 获取书籍信息
+// 通过书名获取书籍信息
 router.get('/getNovelInfo', async (ctx, next) => {
     let { title,source,sourceUrl } = ctx.query
     ctx.body = await getNovelInfo({title,source,sourceUrl})
+})
+
+// 通过id获取书籍信息
+router.get('/getNovelInfoById', async (ctx, next) => {
+    let { bookid } = ctx.query
+    ctx.body = await getNovelInfoById(bookid)
 })
 
 // 获取单章节详情
