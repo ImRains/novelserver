@@ -17,6 +17,7 @@ router.get('/search', async (ctx, next) => {
 // 通过书名获取书籍信息
 router.get('/getNovelInfo', async (ctx, next) => {
     let { title,source,sourceUrl } = ctx.query
+    sourceUrl = decodeURIComponent(sourceUrl)
     ctx.body = await getNovelInfo({title,source,sourceUrl})
 })
 
