@@ -88,7 +88,9 @@ app.use(jwtKoa({ secret: JWT_SECRET_KEY }).unless({
     /^\/api\/novels/,
     /^\/api\/user\/login/,
     /^\/api\/user\/isExist/,
-    /^\/api\/user\/register/
+    /^\/api\/user\/register/,
+    /^\/userImg/,
+    /^\/novelImg/,
   ]
 }))
 

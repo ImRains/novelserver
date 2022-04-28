@@ -34,6 +34,20 @@
          return new ErrorModel(registerUserNameNotExistInfo)
      }
  }
+
+ /**
+  * 通过 token 获取用户信息
+  * @param {*} token 
+  */
+ async function getUserInfoByToken(token){
+    let userInfo = decryptJwt(token)
+    if(userInfo.token){
+        // token true
+        return new SuccessModel(userInfo.data)
+    }else{
+        return new ErrorModel(userInfo.data)
+    }
+ }
  
  /**
   * 注册
@@ -203,5 +217,6 @@
      changePassword,
      addNoverToFollow,
      getNovelFollowList,
-     deleteNoverToFollow
+     deleteNoverToFollow,
+     getUserInfoByToken
  }

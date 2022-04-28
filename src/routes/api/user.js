@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const { isExist, register, login, deleteCurUser, changeInfo, changePassword,addNoverToFollow,getNovelFollowList,deleteNoverToFollow } = require('../../controller/user')
+const { isExist, register, login, deleteCurUser, changeInfo, changePassword,addNoverToFollow,getNovelFollowList,deleteNoverToFollow,getUserInfoByToken } = require('../../controller/user')
 const userValidate = require('../../validator/user')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck, loginRedirect } = require('../../middlewares/loginChecks')
@@ -9,17 +9,23 @@ router.prefix('/api/user')
 
 // 注册Api
 router.post('/register', genValidator(userValidate), async (ctx, next) => {
-  const { userName, password, gender } = ctx.request.body
+  const { userName, password } = ctx.request.body
   // 调用 controller
+  let gender = 1
   ctx.body = await register({ userName, password, gender })
 })
 
 // 检测用户名是否存在
 router.post('/isExist', async (ctx, next) => {
   const { userName } = ctx.request.body
-  console.log(userName)
   // 调用controller
   ctx.body = await isExist(userName)
+})
+
+// 通过token获取用户信息
+router.get('/getUserInfo', async(ctx, nect) => {
+  const token = ctx.header.authorization.split(' ')[1]
+  ctx.body = await getUserInfoByToken(token)
 })
 
 // 登陆

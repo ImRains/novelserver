@@ -4,6 +4,7 @@
 
  const { User }  = require('../../db/model/index')
  const { formatUser } = require('./_format')
+ const { COMPUTE_CONF } = require('../../config/db')
  
  /**
   * 获取用户信息
@@ -46,7 +47,7 @@
          password,
          gender,
          nickName: nickName ? nickName : userName,
-         picture:'/newstatic/img/normal.jpg'
+         picture: COMPUTE_CONF.host + ':' + COMPUTE_CONF.port + '/userImg/normal.jpg'
      })
  
      const data = result.dataValues
