@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const { isExist, register, login, deleteCurUser, changeInfo, changePassword,addNoverToFollow,getNovelFollowList,deleteNoverToFollow,getUserInfoByToken } = require('../../controller/user')
+const { isExist, register, login, deleteCurUser, changeInfo, changePassword,addNoverToFollow,getNovelFollowList,deleteNoverToFollow,getUserInfoByToken,isCollect } = require('../../controller/user')
 const userValidate = require('../../validator/user')
 const { genValidator } = require('../../middlewares/validator')
 const { loginCheck, loginRedirect } = require('../../middlewares/loginChecks')
@@ -80,9 +80,18 @@ router.post('/deleteNovelToFollow', async(ctx,next) => {
     ctx.body = await deleteNoverToFollow({token,novelId})
 })
 
+// 获取书架列表
 router.get('/getNovelFollowList',async(ctx,next) => {
   const token = ctx.header.authorization.split(' ')[1]
   ctx.body = await getNovelFollowList(token)
+})
+
+// 判断某书籍是否收藏
+router.get('/isCollect',async(ctx,next) => {
+  let { novelId } = ctx.query
+  const token = ctx.header.authorization.split(' ')[1]
+  // controller
+  ctx.body = await isCollect({token,novelId})
 })
 
 module.exports = router

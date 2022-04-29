@@ -3,7 +3,7 @@
  */
 
  const { getUserInfo, createUser, deleteUser, updateUser } = require('../services/db/user')
- const { addFollower, getFollowerList, deleteFollower } = require('../services/db/novel-relation')
+ const { addFollower, getFollowerList, deleteFollower,isCollectServer } = require('../services/db/novel-relation')
  const { SuccessModel, ErrorModel } = require('../model/ResModel')
  const {
      registerUserNameNotExistInfo,
@@ -211,6 +211,24 @@
         novelList
     })
  }
+
+ /**
+  * 判断某书籍是否被收藏
+  * @param {*} param0 
+  */
+ async function isCollect({token,novelId}){
+    let userInfo = decryptJwt(token)
+    try {
+        let res = await isCollectServer({userId:userInfo.data.id,novelId})
+        return new SuccessModel({
+            isCollect:res
+        })
+        
+    } catch (error) {
+        console.log(error)
+        return new ErrorModel(addFollowerFailInfo)
+    }
+ }
  
  module.exports = {
      isExist,
@@ -222,5 +240,6 @@
      addNoverToFollow,
      getNovelFollowList,
      deleteNoverToFollow,
-     getUserInfoByToken
+     getUserInfoByToken,
+     isCollect
  }

@@ -76,9 +76,27 @@
         novelList
     }
  }
+
+ async function isCollectServer({userId,novelId}){
+    const result = await novelRelation.findOne({
+        include: [
+            {
+                model: Novel,
+                attributes:['id','title','cover','date','author','hot','source','sourceUrl']
+            }
+        ],
+        where:{
+            userId,
+            novelId
+        }
+    })
+    if(result == null) return false
+    return (result.dataValues.novelId == novelId && result.dataValues.userId == userId)
+ }
  
  module.exports = {
     addFollower,
     getFollowerList,
-    deleteFollower
+    deleteFollower,
+    isCollectServer
  }
