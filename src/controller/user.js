@@ -43,7 +43,8 @@
     let userInfo = decryptJwt(token)
     if(userInfo.token){
         // token true
-        return new SuccessModel(userInfo.data)
+        let res = await getUserInfo(userInfo.data.userName)
+        return new SuccessModel(res)
     }else{
         return new ErrorModel(userInfo.data)
     }
@@ -117,9 +118,6 @@
      let userInfo = decryptJwt(token).data
      console.log('token',userInfo)
      const userName = userInfo.userName
-     if (!nickName) {
-         nickName = userName
-     }
      // service
      const result = await updateUser({
          newNickName: nickName,
