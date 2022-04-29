@@ -113,9 +113,10 @@
   * @param {Object} ctx ctx
   */
  async function changeInfo({ token, nickName, city, picture }) {
-     //修改完基本信息要修改session
-     let userInfo = decryptJwt(token)
-     const userName = userInfo.data.userName
+     //修改完基本信息要修改token
+     let userInfo = decryptJwt(token).data
+     console.log('token',userInfo)
+     const userName = userInfo.userName
      if (!nickName) {
          nickName = userName
      }
@@ -126,15 +127,18 @@
          newCity: city
      }, { userName })
      if (result) {
-         //执行成功，修改session
-         Object.assign(userInfo, {
-             nickName,
-             picture,
-             city
-         })
+         //执行成功
+         let option = {}
+         if(nickName)option.nickName = nickName
+         if(picture)option.picture = picture
+         if(city)option.city = city
+         Object.assign(userInfo, option)
+         delete userInfo.iat
+         delete userInfo.exp
          let newToken = encryptJwt(userInfo, 7)
          return new SuccessModel({
-             token:newToken
+             token:newToken,
+             userInfo
          })
      }
      // 失败 返回修改信息失败

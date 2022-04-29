@@ -35,7 +35,7 @@ app.use(
       },
       maxAge: 5, 
       credentials: true, 
-      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+      allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'], 
       allowHeaders: ['Content-Type', 'Authorization', 'Accept'], 
       exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'] 
   })
